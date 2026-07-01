@@ -1,0 +1,18 @@
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Database and secrets
+backend/instance/
+*.db
+.env
+
+# Editor
+.vscode/
+.idea/
