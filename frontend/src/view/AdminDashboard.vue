@@ -408,12 +408,75 @@
 <script setup>
 
 import { ref, onMounted } from 'vue';
+
+import PendingDriveList from '@/components/admin/PendingDriveList.vue';
+
+const PendingDriveList = ref([])
 const companies = ref([])
 const stats = ref({})
 const students = ref([])
 const activeSection = ref("pending")
 const studentTab = ref(true)
 const companyList = ref([])
+
+
+
+async function fetchPendingDrives() {
+  const token = localStorage.getItem("auth_token")
+
+  const response = await fetch(
+    "http://127.0.0.1:5000/api/admin/pending-drives",
+    {
+      headers: {
+        "Authentication-Token": token
+      }
+    }
+  )
+
+  const data = await response.json()
+  pendingDrives.value = data
+}
+
+async function approveDrive(driveId) {
+  const token = localStorage.getItem("auth_token")
+
+  const response = await fetch(
+    `http://127.0.0.1:5000/api/admin/drive/${driveId}/approve`,
+    {
+      method: "PUT",
+
+      headers: {
+        "Authentication-Token": token
+      }
+    }
+  )
+
+  const data = await response.json()
+  alert(data.message)
+
+  await fetchPendingDrives()
+  await fetchStats()
+}
+
+async function rejectDrive(driveId) {
+  const token = localStorage.getItem("auth_token")
+
+  const response = await fetch(
+    `http://127.0.0.1:5000/api/admin/drive/${driveId}/reject`,
+    {
+      method: "PUT",
+
+      headers: {
+        "Authentication-Token": token
+      }
+    }
+  )
+
+  const data = await response.json()
+  alert(data.message)
+
+  await fetchPendingDrives()
+}
 
 const blacklistCompany = async (companyId) => {
 
@@ -592,5 +655,6 @@ onMounted(() => {
     fetchStats()
     fetchStudents() 
     fetchCompanylist()
+    fetchPendingDrives()
 })
 </script>

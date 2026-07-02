@@ -198,3 +198,76 @@ class CompanylistAPI(Resource):
                 }
             )
         return make_response(jsonify(result),200)
+
+
+class PendingDriveAPI(Resource):
+
+    @auth_token_required
+    @roles_required("admin")
+    def get(self):
+
+        drives = Drive.query.filter_by(
+            status="Pending"
+        ).all()
+
+        result = []
+
+        for drive in drives:
+            result.append({
+                "id": drive.id,
+                "title": drive.title,
+                "company_name": drive.company.name,
+                "branches": drive.branches.split(","),
+                "year": drive.year,
+                "deadline_date":
+                    drive.deadline_date.isoformat(),
+                "status": drive.status
+            })
+
+        return make_response(jsonify(result), 200)
+
+
+class ApproveDriveAPI(Resource):
+
+    @auth_token_required
+    @roles_required("admin")
+    def put(self, drive_id):
+
+        drive = Drive.query.get(Drive, drive_id)
+
+        if not drive:
+            return {
+                "message": "Drive not found"
+            }, 404
+
+        drive.status = "Approved"
+        db.session.commit()
+
+        return {
+            "message": "Drive approved successfully"
+        }, 200
+
+
+class RejectDriveAPI(Resource):
+
+    @auth_token_required
+    @roles_required("admin")
+    def put(self, drive_id):
+
+        drive = Drive.query.get(Drive, drive_id)
+
+        if not drive:
+            return {
+                "message": "Drive not found"
+            }, 404
+
+        drive.status = "Rejected"
+        db.session.commit()
+
+        return {
+            "message": "Drive rejected successfully"
+        }, 200
+
+
+
+

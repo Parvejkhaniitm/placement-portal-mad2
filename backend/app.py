@@ -60,12 +60,15 @@ api.add_resource(ReactivateStudentAPI, '/admin/student/<int:student_id>/reactiva
 api.add_resource(BlacklistCompanyAPI, '/admin/company/<int:company_id>/blacklist')
 api.add_resource(CompanylistAPI, '/admin/company-list')
 
-from controllers.company_api import CompanyDashboardAPI,CompanyProfileAPI,CompanyDriveAPI, DriveApplicationAPI, ApplicationStatusAPI
+from controllers.company_api import CompanyDashboardAPI,CompanyProfileAPI,CompanyDriveAPI, DriveApplicationAPI, ApplicationStatusAPI, PendingDriveAPI, ApproveDriveAPI, RejectDriveAPI
 api.add_resource(CompanyDashboardAPI, '/company/dashboard')
 api.add_resource(CompanyProfileAPI, '/company/profile')
 api.add_resource(CompanyDriveAPI, '/company/drive')
 api.add_resource(DriveApplicationAPI, '/company/drive/<int:drive_id>/applicants')
 api.add_resource(ApplicationStatusAPI, '/company/application/<int:application_id>/status')
+api.add_resource(PendingDriveAPI, '/amdin/pending-drives')
+api.add_resource(ApproveDriveAPI, '/amdin/drives/<int:drive_id>/approve')
+api.add_resource(RejectDriveAPI, '/amdin/drives/<int:drive_id>/reject')
 
 
 
