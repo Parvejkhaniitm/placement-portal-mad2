@@ -49,26 +49,119 @@ api.add_resource(LogoutAPI,'/logout')
 api.add_resource(StudentRegisterAPI,'/student_register')
 api.add_resource(CompanyRegisterAPI,'/company_register')
 
-from controllers.admin_api import PendingComapnayAPI,ApproveCompanyAPI,RejectCompanyAPI,StatsAPI,StudentListAPI,BlacklistStudentAPI,ReactivateStudentAPI,BlacklistCompanyAPI,CompanylistAPI
-api.add_resource(PendingComapnayAPI, '/admin/pending-company')
-api.add_resource(ApproveCompanyAPI, '/admin/company/<int:company_id>/approve')
-api.add_resource(RejectCompanyAPI, '/admin/company/<int:company_id>/reject')
-api.add_resource(StatsAPI, '/admin/stats')
-api.add_resource(StudentListAPI, '/admin/students')
-api.add_resource(BlacklistStudentAPI, '/admin/student/<int:student_id>/blacklist')
-api.add_resource(ReactivateStudentAPI, '/admin/student/<int:student_id>/reactivate')
-api.add_resource(BlacklistCompanyAPI, '/admin/company/<int:company_id>/blacklist')
-api.add_resource(CompanylistAPI, '/admin/company-list')
+# ADMIN APIs
 
-from controllers.company_api import CompanyDashboardAPI,CompanyProfileAPI,CompanyDriveAPI, DriveApplicationAPI, ApplicationStatusAPI, PendingDriveAPI, ApproveDriveAPI, RejectDriveAPI
-api.add_resource(CompanyDashboardAPI, '/company/dashboard')
-api.add_resource(CompanyProfileAPI, '/company/profile')
-api.add_resource(CompanyDriveAPI, '/company/drive')
-api.add_resource(DriveApplicationAPI, '/company/drive/<int:drive_id>/applicants')
-api.add_resource(ApplicationStatusAPI, '/company/application/<int:application_id>/status')
-api.add_resource(PendingDriveAPI, '/amdin/pending-drives')
-api.add_resource(ApproveDriveAPI, '/amdin/drives/<int:drive_id>/approve')
-api.add_resource(RejectDriveAPI, '/amdin/drives/<int:drive_id>/reject')
+from controllers.admin_api import (
+    PendingComapnayAPI,
+    ApproveCompanyAPI,
+    RejectCompanyAPI,
+    StatsAPI,
+    StudentListAPI,
+    BlacklistStudentAPI,
+    ReactivateStudentAPI,
+    BlacklistCompanyAPI,
+    CompanylistAPI,
+    PendingDriveAPI,
+    ApproveDriveAPI,
+    RejectDriveAPI
+)
+
+api.add_resource(
+    PendingComapnayAPI,
+    "/admin/pending-company"
+)
+
+api.add_resource(
+    ApproveCompanyAPI,
+    "/admin/company/<int:company_id>/approve"
+)
+
+api.add_resource(
+    RejectCompanyAPI,
+    "/admin/company/<int:company_id>/reject"
+)
+
+api.add_resource(
+    StatsAPI,
+    "/admin/stats"
+)
+
+api.add_resource(
+    StudentListAPI,
+    "/admin/students"
+)
+
+api.add_resource(
+    BlacklistStudentAPI,
+    "/admin/student/<int:student_id>/blacklist"
+)
+
+api.add_resource(
+    ReactivateStudentAPI,
+    "/admin/student/<int:student_id>/reactivate"
+)
+
+api.add_resource(
+    BlacklistCompanyAPI,
+    "/admin/company/<int:company_id>/blacklist"
+)
+
+api.add_resource(
+    CompanylistAPI,
+    "/admin/company-list"
+)
+
+api.add_resource(
+    PendingDriveAPI,
+    "/admin/pending-drives"
+)
+
+api.add_resource(
+    ApproveDriveAPI,
+    "/admin/drive/<int:drive_id>/approve"
+)
+
+api.add_resource(
+    RejectDriveAPI,
+    "/admin/drive/<int:drive_id>/reject"
+)
+
+
+# COMPANY APIs
+
+from controllers.company_api import (
+    CompanyDashboardAPI,
+    CompanyProfileAPI,
+    CompanyDriveAPI,
+    DriveApplicationAPI,
+    ApplicationStatusAPI
+)
+
+api.add_resource(
+    CompanyDashboardAPI,
+    "/company/dashboard"
+)
+
+api.add_resource(
+    CompanyProfileAPI,
+    "/company/profile"
+)
+
+api.add_resource(
+    CompanyDriveAPI,
+    "/company/drive"
+)
+
+api.add_resource(
+    DriveApplicationAPI,
+    "/company/drive/<int:drive_id>/applicants"
+)
+
+api.add_resource(
+    ApplicationStatusAPI,
+    "/company/application/<int:application_id>/status"
+)
+
 
 
 
