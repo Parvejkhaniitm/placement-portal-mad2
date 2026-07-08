@@ -66,6 +66,14 @@
               </td>
 
               <td>
+
+                <button
+                 class="btn btn-outline-secondary btn-sm me-2"
+                 @click="viewDrive(drive)"
+                >
+                View
+                </button>
+
                 <button
                   class="btn btn-success btn-sm me-2"
                   @click="approveDrive(drive.id)"
@@ -103,9 +111,14 @@ defineProps({
 })
 
 const emit = defineEmits([
+  "view",
   "approve",
   "reject"
 ])
+
+function viewDrive(drive) {
+  emit("view", drive)
+}
 
 function approveDrive(driveId) {
   emit("approve", driveId)

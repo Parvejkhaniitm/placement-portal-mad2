@@ -71,6 +71,14 @@
               </td>
 
               <td>
+
+                <button
+                class="btn btn-outline-secondary btn-sm me-2"
+                @click="viewCompany(company)"
+                >
+                  View
+                </button>
+                
                 <button
                   class="btn btn-success btn-sm me-2"
                   @click="approveCompany(company.id)"
@@ -112,7 +120,10 @@ defineProps({
   }
 })
 
+
+
 const emit = defineEmits([
+  "view",
   "approve",
   "reject"
 ])
@@ -123,5 +134,9 @@ function approveCompany(companyId) {
 
 function rejectCompany(companyId) {
   emit("reject", companyId)
+}
+
+function viewCompany(company) {
+  emit("view", company)
 }
 </script>

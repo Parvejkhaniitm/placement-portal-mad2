@@ -19,7 +19,9 @@ class PendingComapnayAPI(Resource):
             result.append({
                 "id": company.id,
                 "name": company.name,
+                "hr_name": company.name,
                 "hr_email": company.hr_email,
+                "hr_contact": company.hr_contact,
                 "website": company.website,
                 "status": company.status
             })
@@ -104,6 +106,7 @@ class StudentListAPI(Resource):
             result.append({
                 "id": student.id,
                 "name": student.name,
+                "email": student.user.email,
                 "branch": student.branch,
                 "status": student.status,
                 "year": student.year
@@ -191,6 +194,7 @@ class CompanylistAPI(Resource):
                 {
                     "id": company.id,
                     "name": company.name,
+                    "hr_name": company.hr_name,
                     "hr_email": company.hr_email,
                     "hr_contact": company.hr_contact,
                     "website": company.website,
@@ -221,7 +225,8 @@ class PendingDriveAPI(Resource):
                 "year": drive.year,
                 "deadline_date":
                     drive.deadline_date.isoformat(),
-                "status": drive.status
+                "status": drive.status,
+                "description": drive.description,
             })
 
         return make_response(jsonify(result), 200)
@@ -233,7 +238,7 @@ class ApproveDriveAPI(Resource):
     @roles_required("admin")
     def put(self, drive_id):
 
-        drive = Drive.query.get(Drive, drive_id)
+        drive = db.session.get(Drive, drive_id)
 
         if not drive:
             return {
@@ -254,7 +259,7 @@ class RejectDriveAPI(Resource):
     @roles_required("admin")
     def put(self, drive_id):
 
-        drive = Drive.query.get(Drive, drive_id)
+        drive = db.session.get(Drive, drive_id)
 
         if not drive:
             return {

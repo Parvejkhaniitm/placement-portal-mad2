@@ -68,23 +68,30 @@
                 </span>
               </td>
 
-              <td>
-                <button
-                  v-if="student.status === 'Active'"
-                  class="btn btn-outline-danger btn-sm"
-                  @click="blacklistStudent(student.id)"
-                >
-                  Blacklist
-                </button>
+<td>
+  <button
+    class="btn btn-outline-secondary btn-sm me-2"
+    @click="viewStudent(student)"
+  >
+    View
+  </button>
 
-                <button
-                  v-else
-                  class="btn btn-outline-success btn-sm"
-                  @click="reactivateStudent(student.id)"
-                >
-                  Reactivate
-                </button>
-              </td>
+  <button
+    v-if="student.status === 'Active'"
+    class="btn btn-outline-danger btn-sm"
+    @click="blacklistStudent(student.id)"
+  >
+    Blacklist
+  </button>
+
+  <button
+    v-else
+    class="btn btn-outline-success btn-sm"
+    @click="reactivateStudent(student.id)"
+  >
+    Reactivate
+  </button>
+</td>
 
             </tr>
 
@@ -113,6 +120,7 @@ defineProps({
 })
 
 const emit = defineEmits([
+  "view",
   "blacklist",
   "reactivate"
 ])
@@ -123,5 +131,9 @@ function blacklistStudent(studentId) {
 
 function reactivateStudent(studentId) {
   emit("reactivate", studentId)
+}
+
+function viewStudent(student) {
+  emit("view", student)
 }
 </script>

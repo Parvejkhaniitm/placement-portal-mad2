@@ -76,30 +76,47 @@
                 </span>
               </td>
 
-              <td>
-                <button
-                  v-if="company.status === 'Approved'"
-                  class="btn btn-outline-danger btn-sm"
-                  @click="blacklistCompany(company.id)"
-                >
-                  Blacklist
-                </button>
+             <td>
 
-                <button
-                  v-else-if="company.status === 'Blacklisted'"
-                  class="btn btn-outline-success btn-sm"
-                  @click="reactivateCompany(company.id)"
-                >
-                  Reactivate
-                </button>
+  <button
+    class="btn btn-outline-secondary btn-sm me-2"
+    @click="viewCompany(company)"
+  >
+    View
+  </button>
 
-                <span
-                  v-else
-                  class="text-muted small"
-                >
-                  Manage from Pending Approvals
-                </span>
-              </td>
+  <button
+    v-if="company.status === 'Approved'"
+    class="btn btn-outline-danger btn-sm"
+    @click="blacklistCompany(company.id)"
+  >
+    Blacklist
+  </button>
+
+  <button
+    v-else-if="company.status === 'Blacklisted'"
+    class="btn btn-outline-success btn-sm"
+    @click="reactivateCompany(company.id)"
+  >
+    Reactivate
+  </button>
+
+  <button
+    v-else-if="company.status === 'Rejected'"
+    class="btn btn-outline-success btn-sm"
+    @click="reactivateCompany(company.id)"
+  >
+    Approve Again
+  </button>
+
+  <span
+    v-else
+    class="text-muted small"
+  >
+    Manage from Pending Approvals
+  </span>
+
+</td>
 
             </tr>
 
@@ -128,9 +145,14 @@ defineProps({
 })
 
 const emit = defineEmits([
+  "view",
   "blacklist",
   "reactivate"
 ])
+
+function viewCompany(company) {
+  emit("view", company)
+}
 
 function blacklistCompany(companyId) {
   emit("blacklist", companyId)
@@ -149,6 +171,14 @@ function getStatusClass(status) {
     return "bg-warning text-dark"
   }
 
-  return "bg-danger"
+  if (status === "Blacklisted") {
+    return "bg-dark"
+  }
+
+  if (status === "Rejected") {
+    return "bg-danger"
+  }
+
+  return "bg-secondary"
 }
 </script>

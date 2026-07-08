@@ -3,6 +3,31 @@
 
     <AdminNavbar @logout="logout" />
 
+
+    <CompanyDetailsModal
+      v-if="selectedCompany"
+      :company="selectedCompany"
+      @close="closeCompanyModal"
+      @approve="approveCompanyFromModal"
+      @reject="rejectCompanyFromModal"
+    />
+
+    <StudentDetailsModal
+      v-if="selectedStudent"
+      :student="selectedStudent"
+      @close="closeStudentModal"
+      @blacklist="blacklistStudentFromModal"
+      @reactivate="reactivateStudentFromModal"
+    />
+
+    <DriveDetailsModal
+     v-if="selectedDrive"
+     :drive="selectedDrive"
+     @close="closeDriveModal"
+     @approve="approveDriveFromModal"
+     @reject="rejectDriveFromModal"
+    />
+
     <main class="container py-4">
       <h1>Admin Dashboard</h1>
 
@@ -24,12 +49,14 @@
       <PendingCompanyList
         :companies="pendingCompanies"
         :loading="companiesLoading"
+        @view="openCompanyModal"
         @approve="updateCompanyStatus($event, 'approve')"
         @reject="updateCompanyStatus($event, 'reject')"
       />
 
       <PendingDriveList
         :drives="pendingDrives"
+        @view="openDriveModal"
         @approve="updateDriveStatus($event, 'approve')"
         @reject="updateDriveStatus($event, 'reject')"
       />
@@ -39,6 +66,7 @@
         v-if="activeSection === 'students'"
         :students="students"
         :loading="studentsLoading"
+         @view="openStudentModal"
         @blacklist="updateStudentStatus($event, 'blacklist')"
         @reactivate="updateStudentStatus($event, 'reactivate')"
       />
@@ -47,8 +75,14 @@
         v-if="activeSection === 'companies'"
         :companies="companies"
         :loading="companiesLoading"
+        @view="openCompanyModal"
         @blacklist="updateRegisteredCompany($event, 'blacklist')"
         @reactivate="updateRegisteredCompany($event, 'approve')"
+      />
+
+      <ReportsSection
+        v-if="activeSection === 'reports'"
+        :stats="stats"
       />
 
     </main>
@@ -84,6 +118,19 @@ import StudentManagement from
 import CompanyManagement from
   "@/components/admin/CompanyManagement.vue"
 
+
+import CompanyDetailsModal from
+  "@/components/admin/CompanyDetailsModal.vue"
+
+import StudentDetailsModal from
+  "@/components/admin/StudentDetailsModal.vue"
+
+import DriveDetailsModal from
+  "@/components/admin/DriveDetailsModal.vue"
+
+import ReportsSection from
+  "@/components/admin/ReportsSection.vue"
+
 const router = useRouter()
 const activeSection = ref("pending")
 const pendingCompanies = ref([])
@@ -92,7 +139,9 @@ const pendingDrives = ref([])
 const students = ref([])
 const studentsLoading = ref(false)
 const companies = ref([])
-const companiesLoadings = ref(false)
+const selectedCompany = ref(null)
+const selectedStudent = ref(null)
+const selectedDrive = ref(null)
 
 
 const stats = ref({
@@ -102,8 +151,89 @@ const stats = ref({
   total_pending_company: 0
 })
 
+
+
+function openDriveModal(drive) {
+  selectedDrive.value = drive
+}
+
+function closeDriveModal() {
+  selectedDrive.value = null
+}
+
+async function approveDriveFromModal(driveId) {
+  await updateDriveStatus(driveId, "approve")
+
+  selectedDrive.value = null
+
+  await fetchPendingDrives()
+  await fetchStats()
+}
+
+async function rejectDriveFromModal(driveId) {
+  await updateDriveStatus(driveId, "reject")
+
+  selectedDrive.value = null
+
+  await fetchPendingDrives()
+  await fetchStats()
+}
+
+function openStudentModal(student) {
+  selectedStudent.value = student
+}
+
+function closeStudentModal() {
+  selectedStudent.value = null
+}
+
+async function blacklistStudentFromModal(studentId) {
+  await updateStudentStatus(studentId, "blacklist")
+
+  selectedStudent.value = null
+
+  await fetchStudents()
+}
+
+async function reactivateStudentFromModal(studentId) {
+  await updateStudentStatus(studentId, "reactivate")
+
+  selectedStudent.value = null
+
+  await fetchStudents()
+}
+
+
+function openCompanyModal(company) {
+  selectedCompany.value = company
+}
+
+function closeCompanyModal() {
+  selectedCompany.value = null
+}
+
+async function approveCompanyFromModal(companyId) {
+  await updateCompanyStatus(companyId, "approve")
+
+  selectedCompany.value = null
+
+  await fetchStats()
+  await fetchPendingCompanies()
+  await fetchCompanies()
+}
+
+async function rejectCompanyFromModal(companyId) {
+  await updateCompanyStatus(companyId, "reject")
+
+  selectedCompany.value = null
+
+  await fetchStats()
+  await fetchPendingCompanies()
+  await fetchCompanies()
+}
+
 async function fetchCompanies() {
-  companiesLoadings.value = true
+  companiesLoading.value = true
 
   try {
     const response = await fetch(
@@ -127,7 +257,7 @@ async function fetchCompanies() {
   } catch (error) {
     alert("Companies could not be loaded")
   } finally {
-    companiesLoadings.value = false
+    companiesLoading.value = false
   }
 }
 
@@ -377,7 +507,7 @@ function logout() {
 onMounted(async () => {
   await fetchStats()
   await fetchPendingCompanies()
-  await fetchPendingCompanies()
+  await fetchPendingDrives()
   await fetchStudents()
   await fetchCompanies()
 })
