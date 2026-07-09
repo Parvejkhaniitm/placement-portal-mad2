@@ -6,6 +6,7 @@ import {
 import LoginView from "@/view/LoginView.vue"
 import AdminDashboard from "@/view/AdminDashboard.vue"
 import CompanyDashboard from "@/view/CompanyDashboard.vue"
+import StudentDashboard from "@/view/StudentDashboard.vue"
 
 const routes = [
   {
@@ -30,6 +31,7 @@ const routes = [
     }
   },
 
+
   {
     path: "/company",
     name: "company-dashboard",
@@ -39,7 +41,20 @@ const routes = [
       requiresAuth: true,
       role: "Company"
     }
+  },
+
+  {
+    path: "/student",
+    name: "student-dashboard",
+    component: StudentDashboard,
+
+    meta: {
+      requiresAuth: true,
+      role: "Student"
+    }
   }
+
+
 ]
 
 const router = createRouter({

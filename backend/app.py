@@ -163,7 +163,35 @@ api.add_resource(
 )
 
 
+# STUDENT APIs
 
+from controllers.student_api import (
+    StudentDashboardAPI,
+    StudentDriveListAPI,
+    ApplyDriveAPI,
+    StudentApplicationListAPI
+)
+
+
+api.add_resource(
+    StudentDashboardAPI,
+    "/student/dashboard"
+)
+
+api.add_resource(
+    StudentDriveListAPI,
+    "/student/drives"
+)
+
+api.add_resource(
+    ApplyDriveAPI,
+    "/student/drive/<int:drive_id>/apply"
+)
+
+api.add_resource(
+    StudentApplicationListAPI,
+    "/student/applications"
+)
 
 
 
