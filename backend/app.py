@@ -63,7 +63,13 @@ from controllers.admin_api import (
     CompanylistAPI,
     PendingDriveAPI,
     ApproveDriveAPI,
-    RejectDriveAPI
+    RejectDriveAPI,
+    CompanyDriveHistoryAPI
+)
+
+api.add_resource(
+    CompanyDriveHistoryAPI,
+    "/admin/company/<int:company_id>/drives"
 )
 
 api.add_resource(
@@ -169,7 +175,14 @@ from controllers.student_api import (
     StudentDashboardAPI,
     StudentDriveListAPI,
     ApplyDriveAPI,
-    StudentApplicationListAPI
+    StudentApplicationListAPI,
+    StudentProfileAPI
+)
+
+
+api.add_resource(
+    StudentProfileAPI,
+    "/student/profile"
 )
 
 

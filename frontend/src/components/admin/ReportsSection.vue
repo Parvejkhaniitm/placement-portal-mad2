@@ -3,20 +3,28 @@
 
     <div class="card-body p-4">
 
-      <h4 class="mb-3">
-        Reports & Stats
-      </h4>
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+          <h4 class="mb-1">
+            Reports & Stats
+          </h4>
 
-      <p class="text-muted">
-        Quick summary of the placement portal.
-      </p>
+          <p class="text-muted mb-0">
+            Quick overview of the placement portal.
+          </p>
+        </div>
+
+        <span class="badge bg-info-subtle text-info">
+          Summary
+        </span>
+      </div>
 
       <div class="row g-3">
 
         <div class="col-12 col-md-4">
-          <div class="border rounded p-3 h-100">
+          <div class="border rounded p-3 h-100 bg-light">
             <p class="text-muted mb-1">
-              Students
+              Total Students
             </p>
 
             <h3 class="mb-0">
@@ -26,9 +34,9 @@
         </div>
 
         <div class="col-12 col-md-4">
-          <div class="border rounded p-3 h-100">
+          <div class="border rounded p-3 h-100 bg-light">
             <p class="text-muted mb-1">
-              Companies
+              Total Companies
             </p>
 
             <h3 class="mb-0">
@@ -38,9 +46,9 @@
         </div>
 
         <div class="col-12 col-md-4">
-          <div class="border rounded p-3 h-100">
+          <div class="border rounded p-3 h-100 bg-light">
             <p class="text-muted mb-1">
-              Placement Drives
+              Total Drives
             </p>
 
             <h3 class="mb-0">
@@ -51,11 +59,9 @@
 
       </div>
 
-      <hr class="my-4">
-
-      <div class="alert alert-info mb-0">
-        More detailed reports can be added later, like selected students,
-        rejected applications, company-wise drives, and branch-wise placement data.
+      <div class="alert alert-info mt-4 mb-0">
+        Reports can later include selected students, rejected applications,
+        company-wise drives, and branch-wise placement data.
       </div>
 
     </div>

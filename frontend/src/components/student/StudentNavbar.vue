@@ -28,12 +28,23 @@
 
       </div>
 
-      <button
-        class="btn btn-outline-danger"
-        @click="logout"
-      >
-        Logout
-      </button>
+      <div class="d-flex gap-2">
+
+        <button
+          class="btn btn-outline-primary"
+          @click="editProfile"
+        >
+          Edit Profile
+        </button>
+
+        <button
+          class="btn btn-outline-danger"
+          @click="logout"
+        >
+          Logout
+        </button>
+
+      </div>
 
     </div>
   </nav>
@@ -50,6 +61,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
+  "edit-profile",
   "logout"
 ])
 
@@ -60,6 +72,10 @@ const studentInitial = computed(() => {
 
   return props.student.name.charAt(0).toUpperCase()
 })
+
+function editProfile() {
+  emit("edit-profile")
+}
 
 function logout() {
   emit("logout")

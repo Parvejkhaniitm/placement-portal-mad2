@@ -10,6 +10,15 @@
       @close="closeCompanyModal"
       @approve="approveCompanyFromModal"
       @reject="rejectCompanyFromModal"
+      @view-drives="openCompanyDriveHistory"
+    />
+
+    <CompanyDriveHistoryModal
+      v-if="selectedDriveCompany"
+      :company="selectedDriveCompany"
+      :drives="companyDrives"
+      :loading="companyDrivesLoading"
+      @close="closeCompanyDriveHistory"
     />
 
     <StudentDetailsModal
@@ -29,12 +38,39 @@
     />
 
     <main class="container py-4">
-      <h1>Admin Dashboard</h1>
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
 
-      <p class="text-muted">
-        Manage the placement portal.
-      </p>
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
 
+            <div>
+              <span class="badge bg-primary mb-2">
+                Administrator Panel
+              </span>
+
+              <h1 class="mb-1">
+                Admin Dashboard
+              </h1>
+
+              <p class="text-muted mb-0">
+                Manage students, companies, placement drives and reports.
+              </p>
+            </div>
+
+            <div class="text-end">
+              <p class="text-muted mb-1">
+                Pending Approvals
+              </p>
+
+              <h2 class="mb-0">
+                {{ stats.total_pending_company }}
+              </h2>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
 
        <AdminStats :stats="stats" />
 
@@ -131,6 +167,9 @@ import DriveDetailsModal from
 import ReportsSection from
   "@/components/admin/ReportsSection.vue"
 
+import CompanyDriveHistoryModal from
+  "@/components/admin/CompanyDriveHistoryModal.vue"
+
 const router = useRouter()
 const activeSection = ref("pending")
 const pendingCompanies = ref([])
@@ -142,6 +181,10 @@ const companies = ref([])
 const selectedCompany = ref(null)
 const selectedStudent = ref(null)
 const selectedDrive = ref(null)
+
+const selectedDriveCompany = ref(null)
+const companyDrives = ref([])
+const companyDrivesLoading = ref(false)
 
 
 const stats = ref({
@@ -155,6 +198,44 @@ const stats = ref({
 
 function openDriveModal(drive) {
   selectedDrive.value = drive
+}
+
+
+
+async function openCompanyDriveHistory(company) {
+  selectedDriveCompany.value = company
+  companyDrives.value = []
+  companyDrivesLoading.value = true
+
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:5000/api/admin/company/${company.id}/drives`,
+      {
+        headers: {
+          "Authentication-Token":
+            localStorage.getItem("auth_token")
+        }
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      alert(data.message)
+      return
+    }
+
+    companyDrives.value = data.drives
+  } catch (error) {
+    alert("Company drives could not be loaded")
+  } finally {
+    companyDrivesLoading.value = false
+  }
+}
+
+function closeCompanyDriveHistory() {
+  selectedDriveCompany.value = null
+  companyDrives.value = []
 }
 
 function closeDriveModal() {

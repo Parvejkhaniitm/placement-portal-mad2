@@ -1,108 +1,169 @@
 <template>
-    <div class="container mt-5">
-        <div class="card p-4 shadow">
+  <div class="card border-0 bg-light">
+    <div class="card-body p-4">
 
-            <h2 class="text-center mb-4">
-                Placement Portal Login
-            </h2>
+      <div class="text-center mb-4">
+        <h2 class="h4 mb-1">
+          {{ loginTitle }}
+        </h2>
 
-            <form v-on:submit.prevent="login">
+        <p class="text-muted mb-0">
+          Enter your credentials to continue
+        </p>
+      </div>
 
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-control" v-model="email" @input="validateEmail">
-                <div id="emailhelp" class="text-danger" > {{ emailError }}</div>
-            </div>
+      <form @submit.prevent="login">
 
-            <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input type="password" class="form-control" v-model="password">
-            </div>
+        <div class="mb-3">
+          <label class="form-label">
+            Email
+          </label>
 
-            <button type="submit" class="btn btn-primary w-100" >Login</button>
+          <input
+            v-model.trim="email"
+            type="email"
+            class="form-control"
+            placeholder="Enter email"
+            @input="validateEmail"
+          >
 
-            </form>
+          <div class="text-danger small mt-1">
+            {{ emailError }}
+          </div>
         </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            Password
+          </label>
+
+          <input
+            v-model="password"
+            type="password"
+            class="form-control"
+            placeholder="Enter password"
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary w-100"
+        >
+          Login
+        </button>
+
+      </form>
+
     </div>
+  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router'
+import { computed, ref } from "vue"
+import { useRouter } from "vue-router"
+
+const props = defineProps({
+  expectedRole: {
+    type: String,
+    required: true
+  }
+})
+
 const router = useRouter()
 
-const email = ref('')
-const password = ref('')
+const email = ref("")
+const password = ref("")
+const emailError = ref("")
 
+const loginTitle = computed(() => {
+  if (props.expectedRole === "admin") {
+    return "Admin Login"
+  }
 
-const emailError = ref('')
-const validateEmail = () => {
+  return `${props.expectedRole} Login`
+})
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailPattern.test(email.value)) {
-        emailError.value = "Invalid Email";
-        return false
-        
-    } else {
-        emailError.value = '';
-        return true
-    }    
+function validateEmail() {
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+  if (!emailPattern.test(email.value)) {
+    emailError.value = "Invalid email"
+    return false
+  }
+
+  emailError.value = ""
+  return true
 }
 
- async function login(){
-    console.log("login function called")
-    if (!validateEmail()) {
-        alert("Invalid Email, Please enter valid email")
-        return
-    } 
+async function login() {
+  if (!validateEmail()) {
+    alert("Please enter a valid email")
+    return
+  }
 
-    if (email.value === '' || password.value === '') {
-        alert("Please fill all the fields")
-        return
-    }
+  if (!email.value || !password.value) {
+    alert("Please fill all fields")
+    return
+  }
 
-    const user = {
-        email: email.value,
-        password: password.value
-    }
+  const user = {
+    email: email.value,
+    password: password.value
+  }
 
-    const response = await fetch("http://127.0.0.1:5000/api/login", {
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:5000/api/login",
+      {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(user)
-    })
 
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(user)
+      }
+    )
+
+    const data = await response.json()
 
     if (!response.ok) {
-        const errorData = await response.json()
-        alert(`Login Failed: ${errorData.message}`);
-        return
-    } else {
-        const data = await response.json()
-        console.log(data) 
-
-        localStorage.setItem(
-            "auth_token",
-            data.user_details.auth_token
-        )
-
-        localStorage.setItem(
-            "role",
-            data.user_details.Roles[0]
-        )
+      alert(data.message || "Login failed")
+      return
+    }
 
     const role = data.user_details.Roles[0]
 
-    if (role === "admin") {
-        router.push('/admin')
-    } else if(role === "Student") {
-        router.push('/student')
-    } else if (role === 'Company') {
-        router.push('/company')
+    if (role !== props.expectedRole) {
+      alert(`Please use the ${role} login option for this account.`)
+      return
     }
 
+    localStorage.setItem(
+      "auth_token",
+      data.user_details.auth_token
+    )
+
+    localStorage.setItem(
+      "role",
+      role
+    )
+
+    if (role === "admin") {
+      router.push("/admin")
+      return
     }
+
+    if (role === "Student") {
+      router.push("/student")
+      return
+    }
+
+    if (role === "Company") {
+      router.push("/company")
+    }
+  } catch (error) {
+    alert("Login failed. Please try again.")
+  }
 }
 </script>

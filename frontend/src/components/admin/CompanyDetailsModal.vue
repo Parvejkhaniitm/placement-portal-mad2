@@ -76,6 +76,15 @@
           </div>
 
           <div class="modal-footer">
+
+            <button
+              class="btn btn-outline-primary"
+              @click="viewDrives"
+            >
+              View Company Drives
+            </button>
+
+            
             <button
               class="btn btn-outline-secondary"
               @click="closeModal"
@@ -121,8 +130,14 @@ const props = defineProps({
 const emit = defineEmits([
   "close",
   "approve",
-  "reject"
+  "reject",
+  "view-drives"
 ])
+
+
+function viewDrives() {
+  emit("view-drives", props.company)
+}
 
 const statusClass = computed(() => {
   if (props.company.status === "Approved") {

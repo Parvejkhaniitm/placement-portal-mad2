@@ -3,7 +3,8 @@ from flask import request, jsonify, make_response,session
 from controllers.user_datastore import user_datastore
 from flask_security import utils, auth_token_required, roles_required,logout_user
 from controllers.database import db
-from controllers.models import Student,Company,Drive
+from controllers.models import Student,Company,Drive,Application
+from cache import get_cache, set_cache, delete_cache
 
 
 class PendingComapnayAPI(Resource):
@@ -19,7 +20,7 @@ class PendingComapnayAPI(Resource):
             result.append({
                 "id": company.id,
                 "name": company.name,
-                "hr_name": company.name,
+                "hr_name": company.hr_name,
                 "hr_email": company.hr_email,
                 "hr_contact": company.hr_contact,
                 "website": company.website,
@@ -44,6 +45,8 @@ class ApproveCompanyAPI(Resource):
 
         company.status = "Approved"
         db.session.commit()
+
+        delete_cache("admin_dashboard_stats")
         result = {
             "message": "Comapny approved successfully"
         }
@@ -67,6 +70,7 @@ class RejectCompanyAPI(Resource):
         company.status = "Rejected"
 
         db.session.commit()
+        delete_cache("admin_dashboard_stats")
         result = {
             "message": "Company Rejected successfully"
         }
@@ -78,10 +82,19 @@ class StatsAPI(Resource):
     @roles_required("admin")
     def get(self):
 
+        cache_key = "admin_dashboard_stats"
+
+        cached_stats = get_cache(cache_key)
+
+        if cached_stats:
+            return make_response(jsonify(cached_stats), 200)
+
         total_students = Student.query.count()
         total_company = Company.query.count()
-        total_drive = Drive.query.count()  
-        total_pending_company = Company.query.filter_by(status="Pending").count()
+        total_drive = Drive.query.count()
+        total_pending_company = Company.query.filter_by(
+            status="Pending"
+        ).count()
 
         response = {
             "total_students": total_students,
@@ -90,7 +103,9 @@ class StatsAPI(Resource):
             "total_pending_company": total_pending_company
         }
 
-        return make_response(jsonify(response),200)
+        set_cache(cache_key, response, timeout=60)
+
+        return make_response(jsonify(response), 200)
     
 class StudentListAPI(Resource):
 
@@ -129,6 +144,7 @@ class BlacklistStudentAPI(Resource):
         
         student.status = "Blacklisted"
         db.session.commit()
+        delete_cache("admin_dashboard_stats")
 
         result = {
             "message": "Student Blacklisted successfully"
@@ -151,6 +167,7 @@ class ReactivateStudentAPI(Resource):
         
         student.status = "Active"
         db.session.commit()
+        delete_cache("admin_dashboard_stats")
 
         result  = {
             "message": "Student activated successfully"
@@ -175,6 +192,7 @@ class BlacklistCompanyAPI(Resource):
         
         company.status = "Blacklisted"
         db.session.commit()
+        delete_cache("admin_dashboard_stats")
 
         result = {
             "message": "Company blacklisted Successfully"
@@ -247,6 +265,7 @@ class ApproveDriveAPI(Resource):
 
         drive.status = "Approved"
         db.session.commit()
+        delete_cache("admin_dashboard_stats")
 
         return {
             "message": "Drive approved successfully"
@@ -268,11 +287,54 @@ class RejectDriveAPI(Resource):
 
         drive.status = "Rejected"
         db.session.commit()
+        delete_cache("admin_dashboard_stats")
 
         return {
             "message": "Drive rejected successfully"
         }, 200
 
+class CompanyDriveHistoryAPI(Resource):
+
+    @auth_token_required
+    @roles_required("admin")
+    def get(self, company_id):
+
+        company = db.session.get(Company, company_id)
+
+        if not company:
+            return {
+                "message": "Company not found"
+            }, 404
+
+        drives = Drive.query.filter_by(
+            company_id=company.id
+        ).order_by(Drive.id.desc()).all()
+
+        result = []
+
+        for drive in drives:
+            applicant_count = Application.query.filter_by(
+                drive_id=drive.id
+            ).count()
+
+            result.append({
+                "id": drive.id,
+                "title": drive.title,
+                "description": drive.description,
+                "branches": drive.branches.split(","),
+                "year": drive.year,
+                "deadline_date": drive.deadline_date.isoformat(),
+                "status": drive.status,
+                "applicant_count": applicant_count
+            })
+
+        return make_response(jsonify({
+            "company": {
+                "id": company.id,
+                "name": company.name
+            },
+            "drives": result
+        }), 200)
 
 
 

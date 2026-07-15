@@ -59,7 +59,7 @@
 
               <p class="mb-1">
                 <strong>Year:</strong>
-                {{ drive.year }}
+                {{ drive.year === 0 ? "Any Year" : drive.year }}
               </p>
 
               <p class="mb-3">

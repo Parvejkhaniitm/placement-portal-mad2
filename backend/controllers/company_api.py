@@ -151,7 +151,7 @@ class CompanyDriveAPI(Resource):
         year = drive_cred.get("year")
         deadline = drive_cred.get("deadline_date")
 
-        if not all([title,description,branches,year,deadline]):
+        if not title or not description or not branches or year is None or not deadline:
             result = {
                 "message": "Please fill all the required fields"
             }

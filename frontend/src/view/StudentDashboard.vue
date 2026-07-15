@@ -3,6 +3,7 @@
      
     <StudentNavbar
         :student="student"
+        @edit-profile="openProfileForm"
         @logout="logout"
     />
 
@@ -41,6 +42,14 @@
             Branch: {{ student.branch }} |
             Year: {{ student.year }}
         </div>
+
+        <StudentProfileForm
+          v-if="showProfileForm"
+          :student="student"
+          :saving="savingProfile"
+          @save="updateProfile"
+          @cancel="showProfileForm = false"
+        />
 
           <StudentStats :statistics="statistics" />
 
@@ -91,6 +100,9 @@ import DriveDetailsModal from
 import StudentNavbar from
   "@/components/student/StudentNavbar.vue"
 
+import StudentProfileForm from
+  "@/components/student/StudentProfileForm.vue"
+
 
 const router = useRouter()
 const student = ref({})
@@ -110,6 +122,54 @@ const canApply = ref(false)
 const applications = ref([])
 
 const selectedDrive = ref(null)
+
+const showProfileForm = ref(false)
+const savingProfile = ref(false)
+
+
+
+async function updateProfile(profileData) {
+  savingProfile.value = true
+
+  try {
+    const response = await fetch(
+      "http://127.0.0.1:5000/api/student/profile",
+      {
+        method: "PUT",
+
+        headers: {
+          ...getHeaders(),
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(profileData)
+      }
+    )
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      alert(data.message)
+      return
+    }
+
+    student.value = data.student
+    showProfileForm.value = false
+
+    alert(data.message)
+
+    await fetchStudentDashboard()
+    await fetchDrives()
+  } catch (error) {
+    alert("Profile could not be updated")
+  } finally {
+    savingProfile.value = false
+  }
+}
+
+function openProfileForm() {
+  showProfileForm.value = true
+}
 
 function getHeaders() {
   return {

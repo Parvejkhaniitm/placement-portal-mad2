@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import jsonify, make_response
+from flask import jsonify, make_response, request
 from flask_security import (
     auth_token_required,
     roles_required,
@@ -66,6 +66,95 @@ class StudentDashboardAPI(Resource):
         return make_response(jsonify(response), 200)
     
 
+class StudentProfileAPI(Resource):
+
+    @auth_token_required
+    @roles_required("Student")
+    def put(self):
+
+        student = Student.query.filter_by(
+            user_id=current_user.id
+        ).first()
+
+        if not student:
+            response = {
+                "message": "Student profile not found"
+            }
+
+            return make_response(jsonify(response), 404)
+
+        profile_data = request.get_json()
+
+        if not profile_data:
+            response = {
+                "message": "Profile data is required"
+            }
+
+            return make_response(jsonify(response), 400)
+
+        name = profile_data.get("name")
+        branch = profile_data.get("branch")
+        year = profile_data.get("year")
+
+        if not name or not branch or not year:
+            response = {
+                "message": "Please fill all required fields"
+            }
+
+            return make_response(jsonify(response), 400)
+
+        allowed_branches = [
+            "CSE",
+            "IT",
+            "ECE",
+            "Mechanical"
+        ]
+
+        if branch not in allowed_branches:
+            response = {
+                "message": "Invalid branch selected"
+            }
+
+            return make_response(jsonify(response), 400)
+
+        try:
+            year = int(year)
+        except ValueError:
+            response = {
+                "message": "Year must be a number"
+            }
+
+            return make_response(jsonify(response), 400)
+
+        if year not in [1, 2, 3, 4]:
+            response = {
+                "message": "Invalid year selected"
+            }
+
+            return make_response(jsonify(response), 400)
+
+        student.name = name
+        student.branch = branch
+        student.year = year
+
+        db.session.commit()
+
+        response = {
+            "message": "Profile updated successfully",
+
+            "student": {
+                "id": student.id,
+                "name": student.name,
+                "email": student.user.email,
+                "branch": student.branch,
+                "year": student.year,
+                "status": student.status
+            }
+        }
+
+        return make_response(jsonify(response), 200)
+    
+
 
 
 class StudentDriveListAPI(Resource):
@@ -106,7 +195,7 @@ class StudentDriveListAPI(Resource):
 
             branch_allowed = student.branch in eligible_branches
 
-            year_allowed = student.year == drive.year
+            year_allowed = year_allowed = drive.year == 0 or student.year == drive.year
 
             result.append({
                 "id": drive.id,
@@ -178,8 +267,8 @@ class ApplyDriveAPI(Resource):
         ]
 
         
-        branch_allowed = student.branch in drive.branches.split(",")
-        year_allowed = student.year == drive.year
+        branch_allowed = student.branch in eligible_branches
+        year_allowed = drive.year == 0 or student.year == drive.year
 
         if not branch_allowed or not year_allowed:
             response = {

@@ -1,67 +1,82 @@
 <template>
   <div class="row g-3 mb-4">
 
-    <!-- STUDENTS -->
     <div class="col-12 col-md-4">
-
       <div class="card border-0 shadow-sm h-100">
-
         <div class="card-body p-4">
 
-          <p class="text-muted mb-2">
-            Registered Students
-          </p>
+          <div class="d-flex justify-content-between align-items-center">
 
-          <h2 class="mb-0">
-            {{ stats.total_students }}
-          </h2>
+            <div>
+              <p class="text-muted mb-1">
+                Registered Students
+              </p>
+
+              <h2 class="mb-0">
+                {{ stats.total_students }}
+              </h2>
+            </div>
+
+            <span class="badge bg-primary-subtle text-primary">
+              Students
+            </span>
+
+          </div>
 
         </div>
-
       </div>
-
     </div>
 
-    <!-- COMPANIES -->
     <div class="col-12 col-md-4">
-
       <div class="card border-0 shadow-sm h-100">
-
         <div class="card-body p-4">
 
-          <p class="text-muted mb-2">
-            Registered Companies
-          </p>
+          <div class="d-flex justify-content-between align-items-center">
 
-          <h2 class="mb-0">
-            {{ stats.total_company }}
-          </h2>
+            <div>
+              <p class="text-muted mb-1">
+                Registered Companies
+              </p>
+
+              <h2 class="mb-0">
+                {{ stats.total_company }}
+              </h2>
+            </div>
+
+            <span class="badge bg-success-subtle text-success">
+              Companies
+            </span>
+
+          </div>
 
         </div>
-
       </div>
-
     </div>
 
-    <!-- DRIVES -->
     <div class="col-12 col-md-4">
-
       <div class="card border-0 shadow-sm h-100">
-
         <div class="card-body p-4">
 
-          <p class="text-muted mb-2">
-            Placement Drives
-          </p>
+          <div class="d-flex justify-content-between align-items-center">
 
-          <h2 class="mb-0">
-            {{ stats.total_drive }}
-          </h2>
+            <div>
+              <p class="text-muted mb-1">
+                Placement Drives
+              </p>
+
+              <h2 class="mb-0">
+                {{ stats.total_drive }}
+              </h2>
+            </div>
+
+            <span class="badge bg-warning-subtle text-warning">
+              Drives
+            </span>
+
+          </div>
 
         </div>
-
       </div>
-
     </div>
 
   </div>
